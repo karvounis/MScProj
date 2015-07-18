@@ -1,3 +1,4 @@
+package main;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,7 +12,7 @@ public class GUI extends JFrame implements ActionListener{
 	private JLabel nameJar;
 	private JButton start, clear, choose, exit;
 	private JFileChooser fileChooser;
-	private JTextArea log;
+	public static JTextArea log;
 	private JPanel top, center, bot;
 	private File component;	
 	private CodeAnalysis frida;
@@ -46,9 +47,10 @@ public class GUI extends JFrame implements ActionListener{
 
 		//Logging text area
 		log = new JTextArea(15, 30);
-
+		JScrollPane scroll = new JScrollPane(log);
+		
 		center.add(new JLabel("Log:"));
-		center.add(log);
+		center.add(scroll);
 
 		add(center, BorderLayout.CENTER);
 
