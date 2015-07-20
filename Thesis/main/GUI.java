@@ -15,7 +15,7 @@ public class GUI extends JFrame implements ActionListener{
 	public static JTextArea log;
 	private JPanel top, center, bot;
 	private File component;	
-	private CodeAnalysis frida;
+	private Decomposer frida;
 
 	public GUI(){
 		super("Welcome to my thesis GUI!"); 
@@ -101,9 +101,13 @@ public class GUI extends JFrame implements ActionListener{
 		}else if(e.getSource() == start){
 			//Start button pressed
 			if(component != null){
+				
 				log.append("Initiation! FIRE!\n");
-				frida = new CodeAnalysis(component);
-				frida.startAnalysis();
+
+				frida = new Decomposer(component.getPath());
+				frida.loadClassInfo();
+				//frida.startAnalysis();
+				
 			}else{
 				log.append("Choose jar please!\n");
 			}

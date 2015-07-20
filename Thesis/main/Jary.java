@@ -1,6 +1,5 @@
 package main;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.net.URL;
@@ -71,8 +70,6 @@ public class Jary {
 			for(Method al : alekos){
 				System.out.println("\t" + al.getName() + " " + al.getReturnType().getName());
 			}
-		}
+		}		
 	}
-
-
 }
