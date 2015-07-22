@@ -11,31 +11,52 @@ public class ClassInfo {
 
 	/**If the method has more parameters than the value of this variable, then it is considered a long parameter method*/
 	private static final int NUMBER_OF_PARAMETERS = 4;
-	private Class classOrigin;
+	private Class<?> classOrigin;
 	/**Methods of the class*/
 	private Method[] methods;
 	/**Fields of the class*/
 	private Field[] fields;
-	private int staticFields, staticMethods, numberOfMethods, instanceVars, pubProtMethods, longParameterMethod;
-	
-	public ClassInfo(Class classOrigin){
+	private int staticFields, staticMethods, numberOfMethods, instanceVars, privProtMethods, longParameterMethods, couplingClasses;
+
+	public ClassInfo(Class<?> classOrigin){
 		this.classOrigin = classOrigin;
 		
 		methods = classOrigin.getDeclaredMethods();
 		numberOfMethods = methods.length;
-		pubProtMethods();
-		staticMethods();
-		longParameterMethods();
-		
+
 		fields = classOrigin.getDeclaredFields();
 		instanceVars = fields.length;
-		staticFields();
+		fullClassAnalysis();
 	}
 	
-	public ClassInfo(Class classOrigin, Method[] methods, Field[] fields){
+	public ClassInfo(Class<?> classOrigin, Method[] methods, Field[] fields){
 		this.classOrigin = classOrigin;
 		this.methods = methods;
 		this.fields = fields;
+	}
+	
+	/**
+	 * Calls the methods that perform the full class analysis
+	 */
+	public void fullClassAnalysis(){
+		privProtMethods();
+		staticMethods();
+		longParameterMethods();
+		staticFields();		
+		couplingCount();
+	}
+	/**
+	 * Counts the class's instance variables that their type is objects and not primitives. Strings and objects from java. or javax. packages are not counted.
+	 */
+	public void couplingCount(){
+		for(int i = 0; i < instanceVars; i++){
+			Class<?> temp = fields[i].getType();
+			//Checks if the type of the field is primitive or starts with java. or javax.
+			if(temp.isPrimitive() || temp.getName().toLowerCase().startsWith("java.") || temp.getName().toLowerCase().startsWith("javax.")){
+				continue;
+			}
+			couplingClasses++;
+		}
 	}
 	
 	/**
@@ -65,11 +86,11 @@ public class ClassInfo {
 	/**
 	 * Counts the class's public or protected methods.
 	 */
-	public void pubProtMethods(){
+	public void privProtMethods(){
 		//Find the number of methods that are either public or protected
 		for(int i = 0; i < numberOfMethods; i++){
-			if(isPublicProtected(methods[i].getModifiers())){
-				pubProtMethods++;
+			if(isPrivateProtected(methods[i].getModifiers())){
+				privProtMethods++;
 			}
 		}
 	}
@@ -80,7 +101,7 @@ public class ClassInfo {
 	public void longParameterMethods(){
 		for(Method meth : methods){
 			if(parametersMethod(meth) >= NUMBER_OF_PARAMETERS){
-				longParameterMethod++;
+				longParameterMethods++;
 			}
 		}
 	}
@@ -98,14 +119,14 @@ public class ClassInfo {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Checks if the integer input is a public or protected modifier
 	 * @param mod
 	 * @return
 	 */
-	public static boolean isPublicProtected(int mod){
-		return (Modifier.isPublic(mod) || Modifier.isProtected(mod));
+	public static boolean isPrivateProtected(int mod){
+		return (Modifier.isPrivate(mod) || Modifier.isProtected(mod));
 	}
 	
 	/**
@@ -131,7 +152,7 @@ public class ClassInfo {
 		System.err.println("Hi there");
 	}
 
-	public Class getClassOrigin() {
+	public Class<?> getClassOrigin() {
 		return classOrigin;
 	}
 
@@ -155,7 +176,19 @@ public class ClassInfo {
 		return instanceVars;
 	}
 
-	public int getPubProtMethods() {
-		return pubProtMethods;
+	public int getPrivProtMethods() {
+		return privProtMethods;
+	}
+	
+	public int getStaticMethods() {
+		return staticMethods;
+	}
+	
+	public int getLongParameterMethods() {
+		return longParameterMethods;
+	}
+
+	public int getCouplingClasses() {
+		return couplingClasses;
 	}
 }

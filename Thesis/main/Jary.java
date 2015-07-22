@@ -1,7 +1,9 @@
 package main;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -19,13 +21,7 @@ public class Jary {
 
 		//Jary alekos = new Jary(null);
 		String pathToJar = "C:/Users/Vag/Documents/Fitness.jar";
-		
-		/*
-		File smth = new File(pathToJar);
-		String absPath = smth.getAbsolutePath();
-		String path = smth.getPath();
-		*/
-		
+
 		JarFile jarFile;
 		//List that holds classes in the jar file
 		List<Class> lista = new ArrayList<Class>();
@@ -46,7 +42,7 @@ public class Jary {
 				//Gets the name of the file
 				String className = je.getName().substring(0,je.getName().length()-6);
 				className = className.replace('/', '.');
-				
+
 				//Loads the class with the specified name and adds it to the list
 				Class c = cl.loadClass(className);
 				lista.add(c);
@@ -57,12 +53,12 @@ public class Jary {
 		} catch (ClassNotFoundException e1) {
 			System.err.println("Class Not Found.");
 		}
-		
+
 		//Iterates the list of Classes to find all the fields and methods of this class
 		for(Class jio:lista){
 			Field[] frida = jio.getDeclaredFields();
 			Method[] alekos = jio.getDeclaredMethods();
-			
+
 			System.out.println(jio.getName());			
 			for(Field fr : frida){
 				System.out.println("\t" + fr.getType().getName() + " " + fr.getName());
@@ -71,5 +67,6 @@ public class Jary {
 				System.out.println("\t" + al.getName() + " " + al.getReturnType().getName());
 			}
 		}		
+
 	}
 }
