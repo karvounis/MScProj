@@ -11,13 +11,19 @@ public class ClassInfo {
 
 	/**If the method has more parameters than the value of this variable, then it is considered a long parameter method*/
 	private static final int NUMBER_OF_PARAMETERS = 4;
+	/**Weight of every coefficient.*/
+	private static final double WEIGHT = 0.1;
+	
 	private Class<?> classOrigin;
 	/**Methods of the class*/
 	private Method[] methods;
 	/**Fields of the class*/
 	private Field[] fields;
-	private int staticFields, staticMethods, numberOfMethods, instanceVars, privProtMethods, longParameterMethods, couplingClasses;
-
+	private int staticFields, staticMethods, numberOfMethods, instanceVars, publicInstanceVars, privProtMethods, longParameterMethods, couplingClasses;
+	private boolean isDataClass;
+	
+	private double evaluationResult;
+	
 	public ClassInfo(Class<?> classOrigin){
 		this.classOrigin = classOrigin;
 		
@@ -39,71 +45,116 @@ public class ClassInfo {
 	 * Calls the methods that perform the full class analysis
 	 */
 	public void fullClassAnalysis(){
-		privProtMethods();
-		staticMethods();
-		longParameterMethods();
-		staticFields();		
-		couplingCount();
+		privProtMethods = privProtMethods();
+		staticMethods = staticMethods();
+		longParameterMethods = longParameterMethods();
+		staticFields = staticFields();		
+		couplingClasses = couplingCount();
+		isDataClass = isDataClass();
+		publicInstanceVars = countPublicInsVars();
+		
+		evaluationResult = calculateEvaluationResult();
 	}
+	
+	/**
+	 * This method calculates the evaluation of the specific class. The formula is: Σ(wi * ni), where i is the number of metrics used.
+	 * @return
+	 */
+	public double calculateEvaluationResult(){
+		double result = 0;
+		
+		result = WEIGHT * (privProtMethods + staticMethods + longParameterMethods + staticFields + couplingClasses + publicInstanceVars);
+		
+		if(isDataClass){
+			result += 1;
+		}
+		return result;
+	}
+	
+	/**
+	 * Counts the number of instance variables that are public.
+	 * @return
+	 */
+	public int countPublicInsVars(){
+		int tempPublicInsVars = 0;
+		//Find the number of fields that are public
+		for(int i = 0; i < instanceVars; i++){
+			if(Modifier.isPublic(fields[i].getModifiers())){
+				tempPublicInsVars++;
+			}
+		}
+		return tempPublicInsVars;
+	}
+	
 	/**
 	 * Counts the class's instance variables that their type is objects and not primitives. Strings and objects from java. or javax. packages are not counted.
 	 */
-	public void couplingCount(){
+	public int couplingCount(){
+		int tempCoupl = 0;
 		for(int i = 0; i < instanceVars; i++){
 			Class<?> temp = fields[i].getType();
 			//Checks if the type of the field is primitive or starts with java. or javax.
 			if(temp.isPrimitive() || temp.getName().toLowerCase().startsWith("java.") || temp.getName().toLowerCase().startsWith("javax.")){
 				continue;
 			}
-			couplingClasses++;
+			tempCoupl++;
 		}
+		return tempCoupl;
 	}
 	
 	/**
 	 * Counts the class's static fields.
 	 */
-	public void staticFields(){
+	public int staticFields(){
+		int tempStaticFields = 0;
 		//Find the number of fields that are static
 		for(int i = 0; i < instanceVars; i++){
 			if(isStatic(fields[i].getModifiers())){
-				staticFields++;
+				tempStaticFields++;
 			}
 		}
+		return tempStaticFields;
 	}
 	
 	/**
 	 * Counts the class's static methods.
 	 */
-	public void staticMethods(){
+	public int staticMethods(){
+		int tempStaticMethods = 0;
 		//Find the number of fields that are static
 		for(int i = 0; i < numberOfMethods; i++){
 			if(isStatic(methods[i].getModifiers())){
-				staticMethods++;
+				tempStaticMethods++;
 			}
 		}
+		return tempStaticMethods;
 	}
 	
 	/**
 	 * Counts the class's public or protected methods.
 	 */
-	public void privProtMethods(){
+	public int privProtMethods(){
+		int tempprivProtMethods = 0;
 		//Find the number of methods that are either public or protected
 		for(int i = 0; i < numberOfMethods; i++){
 			if(isPrivateProtected(methods[i].getModifiers())){
-				privProtMethods++;
+				tempprivProtMethods++;
 			}
 		}
+		return tempprivProtMethods;
 	}
 
 	/**
 	 * Counts the number of methods that their parameter list exceeds the number of the static variable NUMBER_OF_PARAMETERS
 	 */
-	public void longParameterMethods(){
+	public int longParameterMethods(){
+		int tempLongParameterMethods = 0;
 		for(Method meth : methods){
 			if(parametersMethod(meth) >= NUMBER_OF_PARAMETERS){
-				longParameterMethods++;
+				tempLongParameterMethods++;
 			}
 		}
+		return tempLongParameterMethods;
 	}
 	
 	/**
@@ -147,10 +198,6 @@ public class ClassInfo {
 	public int parametersMethod(Method method){
 		return method.getParameterCount();
 	}
-	
-	public void tog(){
-		System.err.println("Hi there");
-	}
 
 	public Class<?> getClassOrigin() {
 		return classOrigin;
@@ -190,5 +237,13 @@ public class ClassInfo {
 
 	public int getCouplingClasses() {
 		return couplingClasses;
+	}
+
+	public int getPublicInstanceVars() {
+		return publicInstanceVars;
+	}
+
+	public double getEvaluationResult() {
+		return evaluationResult;
 	}
 }

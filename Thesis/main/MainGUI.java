@@ -17,7 +17,7 @@ public class MainGUI extends JFrame implements ActionListener{
 	private Decomposer decomposer;
 
 	public MainGUI(){
-		super("Welcome to my thesis GUI!"); 
+		super(""); 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(600, 400);
 		setLocationRelativeTo(null);
@@ -53,7 +53,7 @@ public class MainGUI extends JFrame implements ActionListener{
 		//South layout
 		JPanel botPanel = new JPanel();
 
-		startBtn = new JButton("Start doing thingies");
+		startBtn = new JButton("Start");
 		startBtn.addActionListener(this);
 		exitBtn = new JButton("Exit");
 		exitBtn.addActionListener(this);

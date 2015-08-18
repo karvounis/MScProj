@@ -18,7 +18,7 @@ public class Decomposer {
 	private JarFile jarFile;
 	private String pathToJar;
 	private List<ClassInfo> classes;
-
+	
 	/**
 	 * Created because we need the String representation of the JarFile's path and not the File object.
 	 * @param pathToJar
@@ -69,10 +69,10 @@ public class Decomposer {
 	}
 	
 	public void startEvaluation(){
-		Evaluator eval = new Evaluator(classes);
+		Evaluator eval = new Evaluator(classes, jarFile.getName());
 		eval.evaluate();
-		//(new Evaluator()).evaluate();
 	}
+	
 	/**
 	 * Searches the package's list of classInfo objects to find the Class with a specified name.
 	 * @param className Name of the class to be found

@@ -15,13 +15,13 @@ public class EvaluationGUI extends JFrame implements ActionListener {
 
 	public EvaluationGUI() {
 		super("Evaluation");
-		setSize(1300, 1000);
+		setSize(1500, 1000);
 		setLocationRelativeTo(null);
 		
 		JPanel centerPanel = new JPanel();
 		
-		resultsLog = new JTextArea(40, 105);
-		resultsLog.setFont(new Font("Courier", Font.BOLD, 14));
+		resultsLog = new JTextArea(40, 170);
+		resultsLog.setFont(new Font("Courier", Font.BOLD, 13));
 		JScrollPane scroll = new JScrollPane(resultsLog);
 		
 		centerPanel.add(scroll);
@@ -41,28 +41,19 @@ public class EvaluationGUI extends JFrame implements ActionListener {
 		setVisible(true);
 	}
 	
-	public void fillTextArea(List<ClassInfo> classes){
-		StringBuilder str = new StringBuilder();
-		
-		for(ClassInfo cl : classes){
-			str.append("Class: " + cl.getClassOrigin().getName() + "\n");
-			str.append("---------------------------------------------------------------------------------------------------------\n");
-			str.append(String.format("	%-30s | %-30s %n", "Number of methods", "Number of instance variables"));
-			str.append(String.format("	%-30d | %-30d %n", cl.getNumberOfMethods(), cl.getInstanceVars()));
-			str.append(String.format("	%-30s | %-30s | %-30s %n", "Private/Protected Methods", "Static Methods", "Static Variables"));
-			str.append(String.format("	%-30d | %-30d | %-30d %n", cl.getPrivProtMethods(), cl.getStaticMethods(), cl.getStaticFields()));
-			str.append(String.format("	%-30s | %-30s | %-30s %n", "Referenced classes", "Long parameter list methods", "is Data Class"));
-			str.append(String.format("	%-30s | %-30s | %-30b %n", cl.getCouplingClasses(), cl.getLongParameterMethods(), cl.isDataClass()));
-			str.append("---------------------------------------------------------------------------------------------------------\n");
-		}
-		
-		resultsLog.setText(str.toString());
+	public void fillTextArea(String sequence){
+		resultsLog.setText(sequence);
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == closeBtn){
+			saveToExcel();
 			dispose();
 		}		
+	}
+	
+	private void saveToExcel(){
+		
 	}
 }
