@@ -1,4 +1,4 @@
-package main;
+package thesis;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,6 +7,11 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+/**
+ * Main window.
+ * @author Evangelos Karvounis
+ *
+ */
 public class MainGUI extends JFrame implements ActionListener{
 
 	private JLabel nameJar;
@@ -17,11 +22,11 @@ public class MainGUI extends JFrame implements ActionListener{
 	private Decomposer decomposer;
 
 	public MainGUI(){
-		super(""); 
+		super("Memory Leaks Reporting Tool"); 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(600, 400);
 		setLocationRelativeTo(null);
-		
+
 		//North layout
 		JPanel topPanel = new JPanel();		
 		topPanel.add(new JLabel("Choose a .jar file for analysis:"));
@@ -46,7 +51,7 @@ public class MainGUI extends JFrame implements ActionListener{
 		//Logging text area
 		log = new JTextArea(15, 30);
 		JScrollPane scroll = new JScrollPane(log);
-		
+
 		centerPanel.add(new JLabel("Log:"));
 		centerPanel.add(scroll);
 
@@ -65,7 +70,7 @@ public class MainGUI extends JFrame implements ActionListener{
 		add(topPanel, BorderLayout.NORTH);
 		add(centerPanel, BorderLayout.CENTER);
 		add(botPanel, BorderLayout.SOUTH);
-		
+
 		setVisible(true);
 	}
 
@@ -73,9 +78,9 @@ public class MainGUI extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 
 		if(e.getSource() == chooseBtn){
-			fileChooser = new JFileChooser();
+			fileChooser = new JFileChooser("C:/Users/Vag/Documents/");
 			//choice = new JFileChooser(System.getProperty("user.home"));
-			
+
 			//Accepts only .jar files
 			FileNameExtensionFilter type2 = new FileNameExtensionFilter("Jar/Class files", "jar");
 
@@ -89,7 +94,7 @@ public class MainGUI extends JFrame implements ActionListener{
 				component = fileChooser.getSelectedFile();
 				log.append("File chosen: " + component.getName() + ".\n");
 				nameJar.setText(component.getName());
-				
+
 			} else {
 				log.append("Jar choice cancelled by user.\n");
 			}
@@ -97,14 +102,14 @@ public class MainGUI extends JFrame implements ActionListener{
 			//Start button pressed
 			if(component != null){
 				log.append("Initiation! FIRE!\n");
-				
+
 				//Creates a decomposer object that will start the analysis
 				decomposer = new Decomposer(component.getPath());
 				log.append("Starting jar analysis..\n");
 				decomposer.startJarAnalysis();		
 				log.append("Starting evaluation..\n");
 				decomposer.startEvaluation();
-				
+
 				clearNameJar();
 				log.append("Process completed. Please choose another jar file or exit.\n");
 			}else{
@@ -121,7 +126,7 @@ public class MainGUI extends JFrame implements ActionListener{
 			System.exit(0);
 		}
 	}
-	
+
 	private void clearNameJar(){
 		component = null;
 		nameJar.setText("");

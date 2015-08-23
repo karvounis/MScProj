@@ -1,4 +1,4 @@
-package main;
+package thesis;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,12 +13,17 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * Decomposes the JAR file to its consisting .class files. Then, starts the evaluation process.
+ * @author Evangelos Karvounis
+ *
+ */
 public class Decomposer {
 
 	private JarFile jarFile;
 	private String pathToJar;
 	private List<ClassInfo> classes;
-	
+
 	/**
 	 * Created because we need the String representation of the JarFile's path and not the File object.
 	 * @param pathToJar
@@ -26,13 +31,13 @@ public class Decomposer {
 	public Decomposer(String pathToJar){
 		this.pathToJar = pathToJar;
 	}
-		
+
 	/**
 	 * Deals with the analysis of a Jar File.
 	 */
 	public void startJarAnalysis(){
 		classes = new ArrayList<ClassInfo>();
-		
+
 		try {
 			jarFile = new JarFile(pathToJar);
 			Enumeration<JarEntry> jarElements = jarFile.entries();
@@ -54,25 +59,33 @@ public class Decomposer {
 				className = className.replace('/', '.');
 
 				//Loads the class with the specified name and adds it to the list
-				Class<?> loadedClass = jarContainer.loadClass(className);
+				Class<?> loadedClass;
+				try{
+				loadedClass = jarContainer.loadClass(className);
 				ClassInfo temp = new ClassInfo(loadedClass);
 				classes.add(temp);
+				}catch(NoClassDefFoundError e2){
+					System.err.println("NoClassDefFoundError");
+				}
 
 			}
 		} catch (IOException e) {
 			System.err.println("Problem with IO.");
-			System.exit(1);
+			return;
 		} catch (ClassNotFoundException e1) {
 			System.err.println("Class Not Found.");
-			System.exit(1);
+			return;
 		}
 	}
-	
+
+	/**
+	 * Starts the evaluation process
+	 */
 	public void startEvaluation(){
 		Evaluator eval = new Evaluator(classes, jarFile.getName());
 		eval.evaluate();
 	}
-	
+
 	/**
 	 * Searches the package's list of classInfo objects to find the Class with a specified name.
 	 * @param className Name of the class to be found
@@ -86,7 +99,7 @@ public class Decomposer {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * String representation of the path
 	 * @return String

@@ -1,4 +1,4 @@
-package main;
+package thesis;
 
 import javax.swing.SwingUtilities;
 

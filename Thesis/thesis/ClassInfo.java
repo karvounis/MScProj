@@ -1,32 +1,34 @@
-package main;
+package thesis;
 
 import java.lang.reflect.*;
 
 /**
- * Contains information about a specific class like its fields and methods.
+ * Contains information about a specific class like its fields, methods and number of bad code smell occurrences.
  * @author Evangelos Karvounis
  *
  */
 public class ClassInfo {
 
 	/**If the method has more parameters than the value of this variable, then it is considered a long parameter method*/
-	private static final int NUMBER_OF_PARAMETERS = 4;
+	private static final int NUMBER_OF_PARAMETERS = 3;
 	/**Weight of every coefficient.*/
-	private static final double WEIGHT = 0.1;
-	
+	private static final double WEIGHT = 1.0;
 	private Class<?> classOrigin;
+
 	/**Methods of the class*/
 	private Method[] methods;
 	/**Fields of the class*/
 	private Field[] fields;
+	/**Field that store the number of a particular bad code smell occurrence.*/
 	private int staticFields, staticMethods, numberOfMethods, instanceVars, publicInstanceVars, privProtMethods, longParameterMethods, couplingClasses;
 	private boolean isDataClass;
-	
+
+	/**Result of the evaluation process. */
 	private double evaluationResult;
-	
+
 	public ClassInfo(Class<?> classOrigin){
 		this.classOrigin = classOrigin;
-		
+
 		methods = classOrigin.getDeclaredMethods();
 		numberOfMethods = methods.length;
 
@@ -34,15 +36,9 @@ public class ClassInfo {
 		instanceVars = fields.length;
 		fullClassAnalysis();
 	}
-	
-	public ClassInfo(Class<?> classOrigin, Method[] methods, Field[] fields){
-		this.classOrigin = classOrigin;
-		this.methods = methods;
-		this.fields = fields;
-	}
-	
+
 	/**
-	 * Calls the methods that perform the full class analysis
+	 * Calls the methods that perform the full class analysis.
 	 */
 	public void fullClassAnalysis(){
 		privProtMethods = privProtMethods();
@@ -52,25 +48,25 @@ public class ClassInfo {
 		couplingClasses = couplingCount();
 		isDataClass = isDataClass();
 		publicInstanceVars = countPublicInsVars();
-		
+
 		evaluationResult = calculateEvaluationResult();
 	}
-	
+
 	/**
 	 * This method calculates the evaluation of the specific class. The formula is: Σ(wi * ni), where i is the number of metrics used.
 	 * @return
 	 */
 	public double calculateEvaluationResult(){
 		double result = 0;
-		
+
 		result = WEIGHT * (privProtMethods + staticMethods + longParameterMethods + staticFields + couplingClasses + publicInstanceVars);
-		
+
 		if(isDataClass){
 			result += 1;
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Counts the number of instance variables that are public.
 	 * @return
@@ -85,7 +81,7 @@ public class ClassInfo {
 		}
 		return tempPublicInsVars;
 	}
-	
+
 	/**
 	 * Counts the class's instance variables that their type is objects and not primitives. Strings and objects from java. or javax. packages are not counted.
 	 */
@@ -101,7 +97,7 @@ public class ClassInfo {
 		}
 		return tempCoupl;
 	}
-	
+
 	/**
 	 * Counts the class's static fields.
 	 */
@@ -115,7 +111,7 @@ public class ClassInfo {
 		}
 		return tempStaticFields;
 	}
-	
+
 	/**
 	 * Counts the class's static methods.
 	 */
@@ -129,7 +125,7 @@ public class ClassInfo {
 		}
 		return tempStaticMethods;
 	}
-	
+
 	/**
 	 * Counts the class's public or protected methods.
 	 */
@@ -156,7 +152,7 @@ public class ClassInfo {
 		}
 		return tempLongParameterMethods;
 	}
-	
+
 	/**
 	 * Checks if a class is a data class. Data class is the class that has getters and setter methods for its fields and nothing else.
 	 * @return boolean true if it is a data class
@@ -179,7 +175,7 @@ public class ClassInfo {
 	public static boolean isPrivateProtected(int mod){
 		return (Modifier.isPrivate(mod) || Modifier.isProtected(mod));
 	}
-	
+
 	/**
 	 * Checks if the integer input is a static modifier
 	 * @param mod
@@ -189,7 +185,6 @@ public class ClassInfo {
 		return (Modifier.isStatic(mod));
 	}
 
-	
 	/**
 	 * Number of parameters in a method.
 	 * @param method
@@ -226,11 +221,11 @@ public class ClassInfo {
 	public int getPrivProtMethods() {
 		return privProtMethods;
 	}
-	
+
 	public int getStaticMethods() {
 		return staticMethods;
 	}
-	
+
 	public int getLongParameterMethods() {
 		return longParameterMethods;
 	}
