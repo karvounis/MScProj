@@ -1,3 +1,5 @@
 # MScProj
-<b>Memory leaks reporting tool</b>
-This is the project that I developed for my thesis in MSc of Software Development in the University of Glasgow.
+<h1>Memory leaks reporting tool: Detecting bad smells at runtime</h1>
+
+<h2>Abstract:</h2>
+Memory in Java is automatically managed by the use of the Garbage Collector. Its purpose is to collect unused objects from the memory heap and free memory space in order to be allocated to new objects. Memory leaks are caused when unused objects are still being referenced, thus they are not being collected and their number increases as the program is running. Bad code smells indicate problems in the code that point to future memory leaks. Static analysis can be done in order to successfully detect them. However, the aim of this project is to detect these bad smells that point to memory leaks during runtime when only the compiled version of the source code is present. The reflection mechanism provides the services needed to perform dynamic analysis of the runtime component. Also, in order to measure the amount of bad smells that are detected from a runtime component, a metric is introduced. The purpose of this metric is to properly conclude about a runtime component’s internal code quality and compare runtime components that provide similar services.
